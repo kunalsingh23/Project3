@@ -103,10 +103,8 @@ cur = conn.cursor()
 cur.execute('DROP TABLE IF EXISTS Tweets')
 cur.execute('DROP TABLE IF EXISTS Users')
 
-#do i have to implement a primary key?
-
-cur.execute('''CREATE TABLE Tweets (tweet_id TEXT, tweet_text TEXT, user_posted TEXT, time_posted TIMESTAMP, retweets INTEGER)''')
-cur.execute('''CREATE TABLE Users (user_id TEXT, screen_name TEXT, num_favs INTEGER, description TEXT)''')
+cur.execute('''CREATE TABLE Tweets (tweet_id INTEGER, tweet_text TEXT, user_posted TEXT, time_posted TIMESTAMP, retweets INTEGER)''')
+cur.execute('''CREATE TABLE Users (user_id INTEGER, screen_name TEXT, num_favs INTEGER, description TEXT)''')
 
 
 for search in all_queries:
@@ -176,6 +174,8 @@ screen_names = []
 for row in cur.execute(sqlusers):
 	screen_names.append(row[1])
 
+#print (screen_names)
+
 # Make a query to select all of the tweets (full rows of tweet information)
 # that have been retweeted more than 10 times. Save the result 
 # (a list of tuples, or an empty list) in a variable called retweets.
@@ -185,25 +185,45 @@ for row in cur.execute(sqltweets):
 	if row[-1] > 10:
 		retweets.append(row[1])
 
+#print (retweets)
+
 # Make a query to select all the descriptions (descriptions only) of 
 # the users who have favorited more than 500 tweets. Access all those 
 # strings, and save them in a variable called favorites, 
 # which should ultimately be a list of strings.
-favorites = True
+favorites = []
 
+for row in cur.execute(sqlusers):
+	if row[2] > 500:
+		favorites.append(row[-1])
+
+#print (favorites)
 
 # Make a query using an INNER JOIN to get a list of tuples with 2 
 # elements in each tuple: the user screenname and the text of the 
-# tweet. Save the resulting list of tuples in a variable called joined_data2.
-joined_data = True
+# tweet. Save the resulting list of tuples in a variable called joined_data.
+joined_data = []
+
+screennameandtweet = 'SELECT Users.screen_name, Tweets.tweet_text FROM Users join Tweets on Users.user_id = Tweets.user_posted'
+
+for row in cur.execute(screennameandtweet):
+	joined_data.append(row)
+
+#print (joined_data)
 
 # Make a query using an INNER JOIN to get a list of tuples with 2 
 # elements in each tuple: the user screenname and the text of the 
 # tweet in descending order based on retweets. Save the resulting 
 # list of tuples in a variable called joined_data2.
 
-joined_data2 = True
+joined_data2 = []
 
+screennameandtweetdescending = 'SELECT Users.screen_name, Tweets.tweet_text FROM Users join Tweets on Users.user_id = Tweets.user_posted ORDER BY Tweets.retweets DESC'
+
+for row in cur.execute(screennameandtweetdescending):
+	joined_data2.append(row)
+
+#print (joined_data2)
 
 ### IMPORTANT: MAKE SURE TO CLOSE YOUR DATABASE CONNECTION AT THE END 
 ### OF THE FILE HERE SO YOU DO NOT LOCK YOUR DATABASE (it's fixable, 
