@@ -103,6 +103,8 @@ cur = conn.cursor()
 cur.execute('DROP TABLE IF EXISTS Tweets')
 cur.execute('DROP TABLE IF EXISTS Users')
 
+#do i have to implement a primary key?
+
 cur.execute('''CREATE TABLE Tweets (tweet_id TEXT, tweet_text TEXT, user_posted TEXT, time_posted TIMESTAMP, retweets INTEGER)''')
 cur.execute('''CREATE TABLE Users (user_id TEXT, screen_name TEXT, num_favs INTEGER, description TEXT)''')
 
