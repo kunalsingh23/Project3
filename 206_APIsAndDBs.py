@@ -63,7 +63,7 @@ def get_user_tweets(screenname):
 
     if screenname in CACHE_DICTION:
         print ('Data is Cached')
-        return (CACHE_DICTION[screenname])
+        return CACHE_DICTION[screenname]
             
     else: 
         print ('Requesting Twitter API\n')
@@ -73,7 +73,7 @@ def get_user_tweets(screenname):
             dump = json.dumps(CACHE_DICTION)
             fw = open(CACHE_FNAME, 'w')
             fw.write(dump)
-            return (type(results))
+            return (results)
             fw.close()
 
         
@@ -82,6 +82,8 @@ def get_user_tweets(screenname):
 
 # Write an invocation to the function for the "umich" user timeline and 
 # save the result in a variable called umich_tweets:
+
+get_user_tweets('ESPN')
 
 umich_tweets = get_user_tweets('umich')
 
@@ -183,7 +185,7 @@ retweets = []
 
 for row in cur.execute(sqltweets):
 	if row[-1] > 10:
-		retweets.append(row[1])
+		retweets.append(row)
 
 #print (retweets)
 
