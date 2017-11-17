@@ -59,7 +59,7 @@ except:
 
 # Define your function get_user_tweets here:
 
-def get_user_tweets(screenname):
+def get_user_tweets(screenname): #anytime you put a twitter handle into this function, JSON + SQL file will be automatically updated 
 
     if screenname in CACHE_DICTION:
         print ('Data is Cached')
@@ -105,8 +105,8 @@ cur = conn.cursor()
 cur.execute('DROP TABLE IF EXISTS Tweets')
 cur.execute('DROP TABLE IF EXISTS Users')
 
-cur.execute('''CREATE TABLE Tweets (tweet_id INTEGER, tweet_text TEXT, user_posted TEXT, time_posted TIMESTAMP, retweets INTEGER)''')
-cur.execute('''CREATE TABLE Users (user_id INTEGER, screen_name TEXT, num_favs INTEGER, description TEXT)''')
+cur.execute('''CREATE TABLE Tweets (tweet_id INTEGER PRIMARY KEY, tweet_text TEXT, user_posted TEXT, time_posted TIMESTAMP, retweets INTEGER)''')
+cur.execute('''CREATE TABLE Users (user_id INTEGER PRIMARY KEY, screen_name TEXT, num_favs INTEGER, description TEXT)''')
 
 
 for search in all_queries:
@@ -131,7 +131,35 @@ for search in all_queries:
 		
 	cur.execute("INSERT INTO Users (user_id, screen_name, num_favs, description) VALUES (?, ?, ?, ?)",
 		(user_id, screen_name, num_favs, description))
+	conn.commit()
+	
+for search in all_queries:	 #causes code to run slowly because it goes thru every tweet, every user mentioned, and pulls API data from each user for the Users table
+	
+	mentioned_users = []
 
+	for tweet in CACHE_DICTION[search]:
+		x = (tweet['entities']['user_mentions'])
+		if x != []:
+			for dictionary in x:
+				mentioned_users.append(dictionary['screen_name'])
+	
+	final_mentioned_users = []
+	for x in mentioned_users:
+		if (x not in final_mentioned_users) and (x not in all_queries): #making sure mentions aren't duplicated in SQL table
+			final_mentioned_users.append(x)
+
+	for x in final_mentioned_users:
+	  	try:
+	  		results1 = api.user_timeline(screen_name = x, count = 1)
+	  		user_id1 = results1[0]['user']['id_str']
+	  		screen_name1 = x
+	  		num_favs1 = results1[0]['user']['favourites_count']
+	  		description1 = results1[0]['user']['description']
+	  		cur.execute("INSERT INTO Users (user_id, screen_name, num_favs, description) VALUES (?, ?, ?, ?)",
+	  			(user_id1, screen_name1, num_favs1, description1))
+	  	except:
+	  		continue
+	
 	conn.commit()
 
 ## You should load into the Tweets table: 
