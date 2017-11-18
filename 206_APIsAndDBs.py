@@ -83,7 +83,7 @@ def get_user_tweets(screenname): #anytime you put a twitter handle into this fun
 # Write an invocation to the function for the "umich" user timeline and 
 # save the result in a variable called umich_tweets:
 
-get_user_tweets('ESPN')
+get_user_tweets('ESPN') #any twitter username put here will be added to CACHE_DICTION and to SQL file
 
 umich_tweets = get_user_tweets('umich')
 
@@ -95,7 +95,7 @@ umich_tweets = get_user_tweets('umich')
 # mentioned in the umich timeline, that Twitter user's info should be 
 # in the Users table, etc.
 
-all_queries = []
+all_queries = [] #everything you've ever searched 
 for x in CACHE_DICTION:
 	all_queries.append(x)
 
@@ -234,7 +234,7 @@ for row in cur.execute(sqlusers):
 # tweet. Save the resulting list of tuples in a variable called joined_data.
 joined_data = []
 
-screennameandtweet = 'SELECT Users.screen_name, Tweets.tweet_text FROM Users join Tweets on Users.user_id = Tweets.user_posted'
+screennameandtweet = 'SELECT Users.screen_name, Tweets.tweet_text FROM Users INNER JOIN Tweets on Users.user_id = Tweets.user_posted'
 
 for row in cur.execute(screennameandtweet):
 	joined_data.append(row)
@@ -248,7 +248,7 @@ for row in cur.execute(screennameandtweet):
 
 joined_data2 = []
 
-screennameandtweetdescending = 'SELECT Users.screen_name, Tweets.tweet_text FROM Users join Tweets on Users.user_id = Tweets.user_posted ORDER BY Tweets.retweets DESC'
+screennameandtweetdescending = 'SELECT Users.screen_name, Tweets.tweet_text FROM Users INNER JOIN Tweets on Users.user_id = Tweets.user_posted ORDER BY Tweets.retweets DESC'
 
 for row in cur.execute(screennameandtweetdescending):
 	joined_data2.append(row)
